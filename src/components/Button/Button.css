@@ -1,0 +1,105 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+/* Primary variant */
+.button.primary {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.button.primary:hover {
+  background-color: var(--primary-light-color);
+}
+
+.button.primary:active {
+  background-color: var(--primary-color);
+}
+
+/* Secondary variant */
+.button.secondary {
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.button.secondary:hover {
+  background-color: var(--border-color);
+}
+
+.button.secondary:active {
+  background-color: var(--border-color);
+}
+
+/* Success variant */
+.button.success {
+  background-color: var(--secondary-color);
+  color: #ffffff;
+}
+
+.button.success:hover {
+  background-color: var(--secondary-light-color);
+}
+
+.button.success:active {
+  background-color: var(--secondary-color);
+}
+
+/* Danger variant */
+.button.danger {
+  background-color: var(--danger-color);
+  color: #ffffff;
+}
+
+.button.danger:hover {
+  opacity: 0.9;
+}
+
+.button.danger:active {
+  opacity: 1;
+}
+
+/* Warning variant */
+.button.warning {
+  background-color: var(--warning-color);
+  color: #1a202c;
+}
+
+.button.warning:hover {
+  opacity: 0.9;
+}
+
+.button.warning:active {
+  opacity: 1;
+}
+
+/* Outline variant */
+.button.outline {
+  background-color: transparent;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.button.outline:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.button.outline:active {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+/* Disabled state */
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+} 

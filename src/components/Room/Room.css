@@ -1,0 +1,100 @@
+.room {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: var(--card-background);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease;
+  border-left: 4px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  min-height: 130px;
+}
+
+.room:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.room.occupied {
+  border-left-color: var(--danger-color);
+}
+
+.room.vacant {
+  border-left-color: var(--secondary-color);
+}
+
+.room.lights-on {
+  background-color: rgba(236, 201, 75, 0.05);
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-number {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.room-status {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+}
+
+.room-status.occupied {
+  background-color: var(--danger-color);
+}
+
+.room-status.vacant {
+  background-color: var(--secondary-color);
+}
+
+.room-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-type {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.room-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--secondary-color);
+  white-space: nowrap;
+}
+
+.room-lights {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.lights-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+}
+
+.lights-on .lights-indicator {
+  background-color: var(--warning-color);
+  box-shadow: 0 0 5px rgba(236, 201, 75, 0.7);
+}
+
+.lights-text {
+  font-size: 12px;
+  color: var(--text-muted);
+} 
