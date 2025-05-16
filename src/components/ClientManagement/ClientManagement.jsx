@@ -5,10 +5,10 @@ import './ClientManagement.css';
 
 // Примеры клиентов для демонстрации
 const sampleClients = [
-  { id: 1001, name: "Иванов Иван", phone: "+7 (900) 123-45-67", email: "ivanov@mail.ru" },
-  { id: 1002, name: "Петров Петр", phone: "+7 (900) 234-56-78", email: "petrov@mail.ru" },
-  { id: 1003, name: "Сидорова Анна", phone: "+7 (900) 345-67-89", email: "sidorova@mail.ru" },
-  { id: 1004, name: "Смирнов Алексей", phone: "+7 (900) 456-78-90", email: "smirnov@mail.ru" },
+  { id: 1001, name: "Иванов Иван", phone: "+375 (29) 123-45-67", email: "ivanov@mail.by" },
+  { id: 1002, name: "Петров Петр", phone: "+375 (33) 234-56-78", email: "petrov@mail.by" },
+  { id: 1003, name: "Сидорова Анна", phone: "+375 (25) 345-67-89", email: "sidorova@mail.by" },
+  { id: 1004, name: "Смирнов Алексей", phone: "+375 (44) 456-78-90", email: "smirnov@mail.by" },
 ];
 
 export default function ClientManagement({ rooms, addClientToRoom }) {
@@ -184,7 +184,7 @@ export default function ClientManagement({ rooms, addClientToRoom }) {
                   <label>Телефон</label>
                   <Input
                     name="phone"
-                    inputPlaceholder="+7 (___) ___-__-__"
+                    inputPlaceholder="+375 (__) ___-__-__"
                     value={newClient.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                   />

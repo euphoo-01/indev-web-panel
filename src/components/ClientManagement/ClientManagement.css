@@ -5,6 +5,7 @@
 	width: 100%;
 }
 
+
 .content-header {
 	padding: 2rem 0;
 	background-color: rgba(20, 31, 47, 0.2);
@@ -267,6 +268,7 @@ h2::after {
 	font-size: 0.875rem;
 	text-align: center;
 	border: 1px solid var(--primary-color);
+	font-family: var(--text-font);
 }
 
 .selected-client-info {
