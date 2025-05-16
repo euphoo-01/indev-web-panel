@@ -1,5 +1,6 @@
+import { useState } from "react";
 import Room from "../Room/Room";
-
+import Modal from "../Modal/Modal";
 const numbers = [
   {
     number: 10,
@@ -28,18 +29,35 @@ const numbers = [
 ];
 
 export default function MainPage({ pageHandler }) {
+  const [open, setModal] = useState(false);
+
+  function openModal({ number, has_access, features, price }) {
+    setModal(true);
+    return (
+      <>
+        {open && (
+          <Modal
+            number={number}
+            has_access={has_access}
+            features={features}
+            price={price}
+          />
+        )}
+      </>
+    );
+  }
   return (
     <>
-      {numbers.map(({number, has_access, features, price, clickHandler}) => (
-        <Room 
-        number={number}
-        access={has_access}
-        features={features}
-        price={price}
-        key={number}
+      {numbers.map(({ number, has_access, features, price }) => (
+        <Room
+          number={number}
+          access={has_access}
+          features={features}
+          price={price}
+          key={number}
+          handler={openModal}
         />
       ))}
     </>
   );
 }
-
