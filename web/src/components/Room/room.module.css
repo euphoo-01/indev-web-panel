@@ -1,0 +1,10 @@
+.room {
+    width: 100px;
+    height: 100px;
+    background: #543737;
+    margin: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
