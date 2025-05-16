@@ -1,270 +1,271 @@
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
 }
 
 .modal-window {
-  width: 90%;
-  max-width: 500px;
-  background-color: var(--card-background);
-  border-radius: 8px;
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--border-color);
+	width: 90%;
+	max-width: 500px;
+	background-color: var(--card-background);
+	border-radius: 8px;
+	box-shadow: var(--shadow-lg);
+	overflow: hidden;
+	max-height: 90vh;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid var(--border-color);
 }
 
 .modal-body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	overflow: hidden;
 }
 
 .modal-header {
-  padding: 16px 20px;
-  background-color: var(--primary-color);
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+	padding: 16px 20px;
+	background-color: var(--primary-color);
+	color: white;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .modal-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
+	margin: 0;
+	font-size: 20px;
+	font-weight: 600;
 }
 
 .close-button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  transition: opacity 0.2s;
+	background: none;
+	border: none;
+	color: white;
+	font-size: 24px;
+	cursor: pointer;
+	padding: 0;
+	line-height: 1;
+	transition: opacity 0.2s;
 }
 
 .close-button:hover {
-  opacity: 0.8;
+	opacity: 0.8;
 }
 
 .modal-content {
-  padding: 20px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  color: var(--text-primary);
+	padding: 20px;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	color: var(--text-primary);
 }
 
 .modal-section {
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 16px;
+	border-bottom: 1px solid var(--border-color);
+	padding-bottom: 16px;
 }
 
 .modal-section:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
+	border-bottom: none;
+	padding-bottom: 0;
 }
 
 .modal-section h3 {
-  margin-top: 0;
-  margin-bottom: 12px;
-  color: var(--text-primary);
-  font-size: 18px;
-  font-weight: 600;
+	margin-top: 0;
+	margin-bottom: 12px;
+	color: var(--text-primary);
+	font-size: 18px;
+	font-weight: 600;
 }
 
 .info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 8px;
 }
 
 .info-label {
-  color: var(--text-secondary);
-  font-size: 14px;
+	color: var(--text-secondary);
+	font-size: 14px;
 }
 
 .info-value {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text-primary);
+	font-weight: 600;
+	font-size: 14px;
+	color: var(--text-primary);
 }
 
 .info-value.status {
-  padding: 4px 8px;
-  border-radius: 12px;
-  color: white;
-  font-size: 12px;
+	padding: 4px 8px;
+	border-radius: 12px;
+	color: white;
+	font-size: 12px;
 }
 
 .info-value.status.occupied {
-  background-color: var(--danger-color);
+	background-color: var(--danger-color);
 }
 
 .info-value.status.vacant {
-  background-color: var(--secondary-color);
+	background-color: var(--secondary-color);
 }
 
 .info-value.status.lights-on {
-  background-color: var(--warning-color);
+	background-color: var(--warning-color);
 }
 
 .info-value.status.lights-off {
-  background-color: var(--text-muted);
+	background-color: var(--text-muted);
+	color: var(--secondary-color);
 }
 
 .info-value.price {
-  color: var(--secondary-color);
-  font-size: 16px;
+	color: var(--text-primary);
+	font-size: 16px;
 }
 
 .features-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 10px;
 }
 
 .feature-item {
-  background-color: var(--background-color);
-  padding: 8px 12px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  border: 1px solid var(--border-color);
+	background-color: var(--background-color);
+	padding: 8px 12px;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	border: 1px solid var(--border-color);
 }
 
 .feature-name {
-  font-size: 14px;
-  color: var(--text-secondary);
+	font-size: 14px;
+	color: var(--text-secondary);
 }
 
 .actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
+	display: flex;
+	gap: 10px;
+	margin-top: 10px;
 }
 
 .action-button {
-  flex: 1;
-  padding: 10px;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  border: none;
+	flex: 1;
+	padding: 10px;
+	border-radius: 6px;
+	font-weight: 500;
+	font-size: 14px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	border: none;
 }
 
 .book-button {
-  background-color: var(--secondary-color);
-  color: white;
+	background-color: var(--secondary-color);
+	color: white;
 }
 
 .book-button:hover {
-  background-color: var(--secondary-light-color);
+	background-color: var(--secondary-light-color);
 }
 
 .edit-button {
-  background-color: var(--background-color);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
+	background-color: var(--background-color);
+	color: var(--text-secondary);
+	border: 1px solid var(--border-color);
 }
 
 .edit-button:hover {
-  background-color: var(--border-color);
+	background-color: var(--border-color);
 }
 
 .edit-mode .form-group {
-  margin-bottom: 16px;
+	margin-bottom: 16px;
 }
 
 .edit-mode label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: var(--text-secondary);
+	display: block;
+	margin-bottom: 8px;
+	font-size: 14px;
+	color: var(--text-secondary);
 }
 
 .edit-select,
 .edit-input {
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 14px;
-  color: var(--text-primary);
-  background-color: var(--input-background);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  transition: all 0.2s;
+	width: 100%;
+	padding: 12px 16px;
+	font-size: 14px;
+	color: var(--text-primary);
+	background-color: var(--input-background);
+	border: 1px solid var(--border-color);
+	border-radius: 6px;
+	transition: all 0.2s;
 }
 
 .edit-select:focus,
 .edit-input:focus {
-  outline: none;
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-  background-color: var(--card-background);
+	outline: none;
+	border-color: var(--secondary-color);
+	box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+	background-color: var(--card-background);
 }
 
 .features-edit-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-top: 8px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 10px;
+	margin-top: 8px;
 }
 
 .feature-edit-item {
-  display: flex;
-  align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 .feature-edit-item label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	margin: 0;
 }
 
 .feature-edit-item input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--secondary-color);
+	width: 16px;
+	height: 16px;
+	accent-color: var(--secondary-color);
 }
 
 .modal-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
+	display: flex;
+	gap: 10px;
+	margin-top: 20px;
 }
 
 .modal-actions button {
-  flex: 1;
+	flex: 1;
 }
 
 .info-value.client-id {
-  font-family: monospace;
-  font-weight: 600;
-  color: var(--primary-color);
+	font-family: monospace;
+	font-weight: 600;
+	color: var(--primary-color);
 }
 
 .clear-button {
-  background-color: var(--danger-color);
-  color: white;
-  border: none;
-} 
+	background-color: var(--danger-color);
+	color: white;
+	border: none;
+}
