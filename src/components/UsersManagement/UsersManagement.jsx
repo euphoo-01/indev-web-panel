@@ -1,11 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import './UsersManagement.css';
 
+// Демо-пользователи для отображения
+const demoUsers = [
+  {
+    id: 1,
+    login: 'root',
+    name: 'Главный администратор',
+    role: 'root'
+  },
+  {
+    id: 2,
+    login: 'admin',
+    name: 'Администратор',
+    role: 'admin'
+  },
+  {
+    id: 3,
+    login: 'employee',
+    name: 'Сотрудник',
+    role: 'employee'
+  }
+];
+
 export default function UsersManagement() {
-  const { users, addUser, ROLES, hasPermission, currentUser } = useAuth();
+  const { ROLES, hasPermission, currentUser } = useAuth();
+  const [users, setUsers] = useState(demoUsers);
   const [newUser, setNewUser] = useState({
     login: '',
     password: '',
@@ -14,6 +37,13 @@ export default function UsersManagement() {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Добавляем текущего пользователя в список, если его там нет
+  useEffect(() => {
+    if (currentUser && !users.some(user => user.id === currentUser.id)) {
+      setUsers(prevUsers => [...prevUsers, currentUser]);
+    }
+  }, [currentUser, users]);
 
   const handleInputChange = (field, value) => {
     setNewUser(prev => ({ ...prev, [field]: value }));
@@ -28,26 +58,34 @@ export default function UsersManagement() {
       return;
     }
 
-    const result = addUser(newUser);
-    
-    if (result.success) {
-      setSuccess(`Пользователь ${newUser.login} успешно добавлен`);
-      setNewUser({
-        login: '',
-        password: '',
-        name: '',
-        role: ROLES.EMPLOYEE
-      });
-    } else {
-      setError(result.message);
+    // Проверяем, не существует ли уже пользователь с таким логином
+    if (users.some(user => user.login === newUser.login)) {
+      setError('Пользователь с таким логином уже существует');
+      return;
     }
+
+    // Добавляем нового пользователя (демо-функционал)
+    const newUserWithId = {
+      ...newUser,
+      id: users.length + 1,
+      password: undefined // Не храним пароль в состоянии
+    };
+
+    setUsers(prevUsers => [...prevUsers, newUserWithId]);
+    setSuccess(`Пользователь ${newUser.login} успешно добавлен`);
+    setNewUser({
+      login: '',
+      password: '',
+      name: '',
+      role: ROLES.EMPLOYEE
+    });
   };
 
   // Фильтруем пользователей в зависимости от роли текущего пользователя
   const displayUsers = users.filter(user => {
-    if (currentUser.role === ROLES.ROOT) {
+    if (currentUser?.role === ROLES.ROOT) {
       return true; // root видит всех
-    } else if (currentUser.role === ROLES.ADMIN) {
+    } else if (currentUser?.role === ROLES.ADMIN) {
       return user.role !== ROLES.ROOT; // admin не видит root
     }
     return false; // остальные не видят никого

@@ -144,6 +144,24 @@ const sampleRoomData = [
 		price: 850,
 		basePrice: 750,
 	},
+	{
+		id: 9,
+		number: 109,
+		type: "Suite",
+		occupied: true,
+		lightsOn: true,
+		clientId: 1014,
+		features: {
+			airConditioner: true,
+			curtains: true,
+			miniBar: true,
+			shower: true,
+			bathtub: true,
+			livingRoom: true,
+		},
+		price: 850,
+		basePrice: 750,
+	},
 ];
 
 // Секции админ-панели
@@ -172,6 +190,9 @@ export default function MainPage({ pageHandler }) {
 	const occupiedRooms = rooms.filter((room) => room.occupied).length;
 	const occupancyRate = (occupiedRooms / totalRooms) * 100;
 	const roomsWithLightsOn = rooms.filter((room) => room.lightsOn).length;
+	const averagePrice = Math.round(
+		rooms.reduce((sum, room) => sum + room.price, 0) / totalRooms
+	);
 
 	// Filter rooms
 	const filteredRooms = rooms.filter((room) => {
@@ -219,16 +240,18 @@ export default function MainPage({ pageHandler }) {
 		);
 	};
 
+	// Обновление цен на основе загруженности отеля
 	useEffect(() => {
 		const priceMultiplier = 1 + occupancyRate / 200; // До 50% увеличение цены
 
-		setRooms(
-			rooms.map((room) => ({
+		// Используем базовые цены из sampleRoomData для расчета, а не из текущего состояния rooms
+		setRooms(prevRooms =>
+			prevRooms.map((room, index) => ({
 				...room,
 				price: Math.round(room.basePrice * priceMultiplier),
 			}))
 		);
-	}, [occupancyRate, rooms]);
+	}, [occupancyRate]); // Зависим только от occupancyRate, а не от rooms
 
 	const handleLogout = () => {
 		logout();
@@ -243,10 +266,10 @@ export default function MainPage({ pageHandler }) {
 				</div>
 
 				<div className="user-info">
-					<div className="user-avatar">{currentUser?.name[0]}</div>
+					<div className="user-avatar">{currentUser?.name ? currentUser.name[0] : '👤'}</div>
 					<div className="user-details">
-						<span className="user-name">{currentUser?.name}</span>
-						<span className="user-role">{currentUser?.role}</span>
+						<span className="user-name">{currentUser?.name || 'Пользователь'}</span>
+						<span className="user-role">{currentUser?.role || 'Сотрудник'}</span>
 					</div>
 				</div>
 
@@ -349,11 +372,7 @@ export default function MainPage({ pageHandler }) {
 									<div className="analytics-card">
 										<h3>Средняя цена</h3>
 										<p className="analytics-value">
-											{Math.round(
-												rooms.reduce((sum, room) => sum + room.price, 0) /
-													totalRooms
-											)}{" "}
-											BYN
+											{averagePrice} BYN
 										</p>
 									</div>
 								</div>

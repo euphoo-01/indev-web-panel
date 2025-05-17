@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+import { authService } from '../services/api';
 
 // Роли пользователей
 export const ROLES = {
@@ -7,114 +8,98 @@ export const ROLES = {
   EMPLOYEE: 'employee'
 };
 
-// Начальные пользователи системы
-const initialUsers = [
-  {
-    id: 1,
-    login: 'root',
-    password: 'root123',
-    role: ROLES.ROOT,
-    name: 'Главный администратор',
-  },
-  {
-    id: 2,
-    login: 'admin',
-    password: 'admin123',
-    role: ROLES.ADMIN,
-    name: 'Администратор',
-  },
-  {
-    id: 3,
-    login: 'employee',
-    password: 'emp123',
-    role: ROLES.EMPLOYEE,
-    name: 'Сотрудник',
-  }
-];
-
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [users, setUsers] = useState(() => {
-    const savedUsers = localStorage.getItem('hotel_users');
-    return savedUsers ? JSON.parse(savedUsers) : initialUsers;
-  });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Сохраняем пользователей в localStorage при изменении
+  // Проверка токена и восстановление сессии при загрузке приложения
   useEffect(() => {
-    localStorage.setItem('hotel_users', JSON.stringify(users));
-  }, [users]);
+    const restoreSession = () => {
+      try {
+        // Если токен найден
+        if (authService.isAuthenticated()) {
+          // Получаем данные пользователя (синхронно)
+          const result = authService.getCurrentUser();
+          
+          if (result.success && result.user) {
+            // Устанавливаем пользователя с гарантированной ролью
+            const userWithRole = {
+              ...result.user,
+              role: result.user.role || ROLES.EMPLOYEE
+            };
+            
+            setCurrentUser(userWithRole);
+            setIsAuthenticated(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error restoring session:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    // Восстанавливаем сессию при загрузке
+    restoreSession();
+    
+    // Слушаем события изменения токена
+    const handleTokenChange = () => {
+      restoreSession();
+    };
+    
+    window.addEventListener('tokenChanged', handleTokenChange);
+    
+    return () => {
+      window.removeEventListener('tokenChanged', handleTokenChange);
+    };
+  }, []);
 
   // Функция авторизации
-  const login = (login, password) => {
-    const user = users.find(
-      (user) => user.login === login && user.password === password
-    );
-    
-    if (user) {
-      setCurrentUser(user);
-      setIsAuthenticated(true);
-      return { success: true, user };
+  const login = async (login, password) => {
+    try {
+      setIsLoading(true);
+      
+      // Вход в систему
+      const result = await authService.login(login, password);
+      
+      if (result.success) {
+        // Устанавливаем пользователя с гарантированной ролью
+        const userWithRole = {
+          ...result.user,
+          role: result.user.role || ROLES.EMPLOYEE
+        };
+        
+        setCurrentUser(userWithRole);
+        setIsAuthenticated(true);
+        return { success: true, user: userWithRole };
+      }
+      
+      return { success: false, message: result.message || 'Неверный логин или пароль' };
+    } catch (error) {
+      console.error('Ошибка при авторизации:', error);
+      return { success: false, message: 'Произошла ошибка при авторизации' };
+    } finally {
+      setIsLoading(false);
     }
-    
-    return { success: false, message: 'Неверный логин или пароль' };
   };
 
   // Функция выхода
   const logout = () => {
+    authService.logout();
     setCurrentUser(null);
     setIsAuthenticated(false);
-  };
-
-  // Добавление нового пользователя
-  const addUser = (newUser) => {
-    // Проверка на права доступа
-    if (!currentUser) return { success: false, message: 'Не авторизован' };
-    
-    // Root может добавлять любого пользователя
-    if (currentUser.role === ROLES.ROOT) {
-      // Проверка уникальности логина
-      if (users.some(user => user.login === newUser.login)) {
-        return { success: false, message: 'Пользователь с таким логином уже существует' };
-      }
-      
-      const userWithId = {
-        ...newUser,
-        id: users.length + 1
-      };
-      
-      setUsers([...users, userWithId]);
-      return { success: true, user: userWithId };
-    }
-    
-    // Admin может добавлять только сотрудников
-    if (currentUser.role === ROLES.ADMIN) {
-      if (newUser.role !== ROLES.EMPLOYEE) {
-        return { success: false, message: 'У вас нет прав для добавления пользователя с этой ролью' };
-      }
-      
-      // Проверка уникальности логина
-      if (users.some(user => user.login === newUser.login)) {
-        return { success: false, message: 'Пользователь с таким логином уже существует' };
-      }
-      
-      const userWithId = {
-        ...newUser,
-        id: users.length + 1
-      };
-      
-      setUsers([...users, userWithId]);
-      return { success: true, user: userWithId };
-    }
-    
-    return { success: false, message: 'У вас нет прав для добавления пользователей' };
   };
 
   // Проверка прав доступа
   const hasPermission = (requiredRole) => {
     if (!currentUser) return false;
+    if (!requiredRole) return true;
+    
+    // Если роль пользователя отсутствует, считаем что у него есть базовые права
+    if (!currentUser.role) return requiredRole === ROLES.EMPLOYEE;
     
     switch (requiredRole) {
       case ROLES.EMPLOYEE:
@@ -133,10 +118,9 @@ export const AuthProvider = ({ children }) => {
       value={{ 
         currentUser, 
         isAuthenticated, 
+        isLoading,
         login, 
-        logout, 
-        users, 
-        addUser, 
+        logout,
         hasPermission, 
         ROLES 
       }}

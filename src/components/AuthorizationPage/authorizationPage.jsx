@@ -17,7 +17,7 @@ export default function AuthorizationPage({ pageHandler }) {
 		if (error) setError("");
 	};
 
-	const handleLogin = () => {
+	const handleLogin = async () => {
 		if (!credentials.login || !credentials.password) {
 			setError("Пожалуйста, заполните все поля");
 			return;
@@ -26,13 +26,19 @@ export default function AuthorizationPage({ pageHandler }) {
 		setIsLoading(true);
 		setError("");
 
-		// Выполняем вход через систему аутентификации
-		const result = login(credentials.login, credentials.password);
+		try {
+			// Выполняем вход через систему аутентификации
+			const result = await login(credentials.login, credentials.password);
 
-		if (result.success) {
-			pageHandler("1");
-		} else {
-			setError(result.message);
+			if (result.success) {
+				pageHandler("1");
+			} else {
+				setError(result.message);
+			}
+		} catch (error) {
+			setError("Произошла ошибка при авторизации");
+			console.error("Login error:", error);
+		} finally {
 			setIsLoading(false);
 		}
 	};
@@ -86,23 +92,6 @@ export default function AuthorizationPage({ pageHandler }) {
 						variant="success"
 					/>
 
-					<div className="auth-demo-credentials">
-						<p>Демо аккаунты:</p>
-						<div className="demo-accounts">
-							<div className="demo-account">
-								<span className="account-role">Root</span>
-								<span className="account-login">root / root123</span>
-							</div>
-							<div className="demo-account">
-								<span className="account-role">Admin</span>
-								<span className="account-login">admin / admin123</span>
-							</div>
-							<div className="demo-account">
-								<span className="account-role">Employee</span>
-								<span className="account-login">employee / emp123</span>
-							</div>
-						</div>
-					</div>
 				</div>
 
 				<div className="auth-footer">

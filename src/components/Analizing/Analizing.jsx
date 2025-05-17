@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import './Analizing.css';
 
@@ -23,19 +23,83 @@ export default function Analizing({ rooms }) {
     historicalData: [],
     revenueData: []
   });
+  
+  // Используем useRef для хранения сгенерированных случайных значений
+  // Они не будут меняться при перерисовке компонента
+  const randomSeedRef = useRef({
+    variationFactors: {},
+    typeVariations: {},
+    historicalVariations: {},
+    revenueVariations: {}
+  });
+
+  // Инициализация случайных значений при первом рендере или изменении timeRange
+  useEffect(() => {
+    // Генерируем случайные вариации для каждого временного диапазона, если они еще не созданы
+    Object.values(TIME_RANGES).forEach(range => {
+      if (!randomSeedRef.current.variationFactors[range]) {
+        switch (range) {
+          case TIME_RANGES.DAY_1:
+            randomSeedRef.current.variationFactors[range] = 0.9 + Math.random() * 0.2; // 90-110%
+            break;
+          case TIME_RANGES.DAYS_7:
+            randomSeedRef.current.variationFactors[range] = 0.85 + Math.random() * 0.3; // 85-115%
+            break;
+          case TIME_RANGES.DAYS_30:
+            randomSeedRef.current.variationFactors[range] = 0.8 + Math.random() * 0.4; // 80-120%
+            break;
+          case TIME_RANGES.MONTHS_3:
+            randomSeedRef.current.variationFactors[range] = 0.75 + Math.random() * 0.5; // 75-125%
+            break;
+          case TIME_RANGES.MONTHS_6:
+            randomSeedRef.current.variationFactors[range] = 0.7 + Math.random() * 0.6; // 70-130%
+            break;
+          default:
+            randomSeedRef.current.variationFactors[range] = 1;
+        }
+      }
+      
+      // Генерируем вариации для типов комнат, если они не созданы
+      if (!randomSeedRef.current.typeVariations[range]) {
+        randomSeedRef.current.typeVariations[range] = {};
+      }
+      
+      // Создаем вариации для исторических данных и доходов
+      const dataPoints = getTimeRangeDataPoints(range);
+      
+      if (!randomSeedRef.current.historicalVariations[range]) {
+        randomSeedRef.current.historicalVariations[range] = Array.from(
+          { length: dataPoints }, 
+          () => Math.random() * 0.4 - 0.2 // -20% до +20%
+        );
+      }
+      
+      if (!randomSeedRef.current.revenueVariations[range]) {
+        randomSeedRef.current.revenueVariations[range] = Array.from(
+          { length: dataPoints }, 
+          () => Math.random() * 0.4 - 0.2 // -20% до +20%
+        );
+      }
+    });
+  }, []);
 
   // Расчет аналитических данных в зависимости от временного диапазона
   useEffect(() => {
+    // Убедимся, что случайные значения были инициализированы
+    if (!randomSeedRef.current.variationFactors[timeRange]) {
+      return;
+    }
+    
     // Базовые данные
     const totalRooms = rooms.length;
     let occupiedRooms = rooms.filter(room => room.occupied).length;
     let roomsWithLightsOn = rooms.filter(room => room.lightsOn).length;
     
     // Уменьшаем цены в 10 раз
-    let averagePrice = Math.round(rooms.reduce((sum, room) => sum + (room.price / 10), 0) / totalRooms);
+    let averagePrice = Math.round(rooms.reduce((sum, room) => sum + (room.price), 0) / totalRooms);
     
     // Применяем вариации в зависимости от выбранного диапазона
-    const variationFactor = getVariationFactor();
+    const variationFactor = randomSeedRef.current.variationFactors[timeRange];
     occupiedRooms = Math.min(totalRooms, Math.round(occupiedRooms * variationFactor));
     roomsWithLightsOn = Math.min(totalRooms, Math.round(roomsWithLightsOn * variationFactor));
     averagePrice = Math.round(averagePrice * variationFactor);
@@ -49,11 +113,16 @@ export default function Analizing({ rooms }) {
         roomTypes[room.type] = { total: 0, occupied: 0 };
       }
       roomTypes[room.type].total += 1;
+      
+      // Создаем вариации для типов комнат, если они не созданы
+      if (!randomSeedRef.current.typeVariations[timeRange][room.type]) {
+        randomSeedRef.current.typeVariations[timeRange][room.type] = 0.8 + Math.random() * 0.4; // 80-120% от основной вариации
+      }
     });
     
     // Применяем вариации загруженности для типов комнат
     Object.keys(roomTypes).forEach(type => {
-      const typeVariation = variationFactor * (0.8 + Math.random() * 0.4); // 80-120% от основной вариации
+      const typeVariation = variationFactor * randomSeedRef.current.typeVariations[timeRange][type];
       const totalRoomsOfType = roomTypes[type].total;
       roomTypes[type].occupied = Math.min(
         totalRoomsOfType, 
@@ -62,8 +131,8 @@ export default function Analizing({ rooms }) {
     });
 
     // Генерация исторических данных с вариациями
-    const historicalData = getHistoricalData(occupancyRate);
-    const revenueData = getRevenueData(occupancyRate, averagePrice, totalRooms);
+    const historicalData = getHistoricalData(occupancyRate, timeRange);
+    const revenueData = getRevenueData(occupancyRate, averagePrice, totalRooms, timeRange);
 
     setAnalyticsData({
       occupiedRooms,
@@ -76,75 +145,47 @@ export default function Analizing({ rooms }) {
     });
   }, [timeRange, rooms]);
 
-  // Вариация в зависимости от временного диапазона
-  const getVariationFactor = () => {
-    switch (timeRange) {
-      case TIME_RANGES.DAY_1:
-        return 0.9 + Math.random() * 0.2; // 90-110%
-      case TIME_RANGES.DAYS_7:
-        return 0.85 + Math.random() * 0.3; // 85-115%
-      case TIME_RANGES.DAYS_30:
-        return 0.8 + Math.random() * 0.4; // 80-120%
-      case TIME_RANGES.MONTHS_3:
-        return 0.75 + Math.random() * 0.5; // 75-125%
-      case TIME_RANGES.MONTHS_6:
-        return 0.7 + Math.random() * 0.6; // 70-130%
-      default:
-        return 1;
-    }
-  };
-
   // Симуляция исторических данных на основе текущих данных и выбранного диапазона
-  const getHistoricalData = (baseOccupancy) => {
-    let dataPoints;
+  const getHistoricalData = (baseOccupancy, selectedTimeRange) => {
+    const dataPoints = getTimeRangeDataPoints(selectedTimeRange);
+    const variations = randomSeedRef.current.historicalVariations[selectedTimeRange];
     
-    switch (timeRange) {
-      case TIME_RANGES.DAY_1:
-        dataPoints = 24; // Часы
-        break;
-      case TIME_RANGES.DAYS_7:
-        dataPoints = 7; // Дни
-        break;
-      case TIME_RANGES.DAYS_30:
-        dataPoints = 30; // Дни
-        break;
-      case TIME_RANGES.MONTHS_3:
-        dataPoints = 12; // Недели
-        break;
-      case TIME_RANGES.MONTHS_6:
-        dataPoints = 24; // Недели
-        break;
-      default:
-        dataPoints = 24;
-    }
+    if (!variations) return [];
     
-    // Генерация данных с вариациями
+    // Генерация данных с постоянными вариациями
     return Array.from({ length: dataPoints }, (_, i) => {
-      const variation = Math.sin(i / (dataPoints / Math.PI)) * 15;
+      const sinVariation = Math.sin(i / (dataPoints / Math.PI)) * 15; // Синусоидная вариация для естественного тренда
+      const randomVariation = variations[i] * baseOccupancy; // Случайная вариация на основе базового значения
+      
       return {
-        value: Math.min(100, Math.max(0, baseOccupancy + variation)),
+        value: Math.min(100, Math.max(0, baseOccupancy + sinVariation + randomVariation)),
         label: i.toString()
       };
     });
   };
 
   // Симуляция прогноза доходов
-  const getRevenueData = (occupancyRate, averagePrice, totalRooms) => {
+  const getRevenueData = (occupancyRate, averagePrice, totalRooms, selectedTimeRange) => {
     const baseRevenue = averagePrice * totalRooms * occupancyRate / 100;
-    const dataPoints = getTimeRangeDataPoints();
+    const dataPoints = getTimeRangeDataPoints(selectedTimeRange);
+    const variations = randomSeedRef.current.revenueVariations[selectedTimeRange];
+    
+    if (!variations) return [];
     
     return Array.from({ length: dataPoints }, (_, i) => {
-      const variation = Math.sin(i / (dataPoints / Math.PI)) * (baseRevenue * 0.2);
+      const sinVariation = Math.sin(i / (dataPoints / Math.PI)) * (baseRevenue * 0.2); // Синусоидная вариация
+      const randomVariation = variations[i] * baseRevenue; // Постоянная случайная вариация
+      
       return {
-        value: Math.max(0, baseRevenue + variation),
+        value: Math.max(0, baseRevenue + sinVariation + randomVariation),
         label: i.toString()
       };
     });
   };
 
-  // Получение количества точек данных для текущего временного диапазона
-  const getTimeRangeDataPoints = () => {
-    switch (timeRange) {
+  // Получение количества точек данных для временного диапазона
+  const getTimeRangeDataPoints = (selectedTimeRange) => {
+    switch (selectedTimeRange) {
       case TIME_RANGES.DAY_1: return 24;
       case TIME_RANGES.DAYS_7: return 7;
       case TIME_RANGES.DAYS_30: return 30;
@@ -303,4 +344,4 @@ export default function Analizing({ rooms }) {
       </div>
     </div>
   );
-} 
+}
