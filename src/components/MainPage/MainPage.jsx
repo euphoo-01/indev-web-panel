@@ -219,9 +219,8 @@ export default function MainPage({ pageHandler }) {
 		);
 	};
 
-	// Dynamic pricing based on occupancy
 	useEffect(() => {
-		const priceMultiplier = 1 + occupancyRate / 200; // Max 50% increase at 100% occupancy
+		const priceMultiplier = 1 + occupancyRate / 200; // До 50% увеличение цены
 
 		setRooms(
 			rooms.map((room) => ({

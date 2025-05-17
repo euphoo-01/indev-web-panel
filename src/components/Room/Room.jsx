@@ -1,12 +1,23 @@
 import "./Room.css";
+import { useState } from "react";
 
 export default function Room({ room, onClick }) {
-  const { number, type, occupied, lightsOn, price } = room;
+  const { id, number, type, occupied, lightsOn, price } = room;
+  const [showSensors, setShowSensors] = useState(false);
+  
+  const handleClick = (e) => {
+    if (onClick) onClick(e);
+  };
+  
+  const handleSensorsToggle = (e) => {
+    e.stopPropagation();
+    setShowSensors(!showSensors);
+  };
   
   return (
     <div 
       className={`room ${occupied ? 'occupied' : 'vacant'} ${lightsOn ? 'lights-on' : ''}`}
-      onClick={onClick}
+      onClick={handleClick}
     >
       <div className="room-header">
         <span className="room-number">{number}</span>
@@ -24,6 +35,15 @@ export default function Room({ room, onClick }) {
         <span className="lights-indicator"></span>
         <span className="lights-text">{lightsOn ? 'Свет включен' : 'Свет выключен'}</span>
       </div>
+      
+      {/* <button 
+        className="sensors-toggle-btn" 
+        onClick={handleSensorsToggle}
+      >
+        {showSensors ? 'Hide Sensors' : 'Show Sensors'}
+      </button> */}
+      
+      {/* {showSensors && <RoomSensors roomId={id} />} */}
     </div>
   );
 }
